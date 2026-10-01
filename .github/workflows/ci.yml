@@ -6,7 +6,7 @@ jobs:
   check:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Test process, tunnel, migration and transition behaviour
         run: Scripts/check.sh
       - name: Check Swift formatting
