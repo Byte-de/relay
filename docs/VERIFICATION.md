@@ -6,6 +6,11 @@ is a release follow-up, not an inferred result.
 
 ## Completed
 
+- Branding refresh, 1 October 2026 (1.0.0 build 2): the app icon uses the supplied
+  Byte B SVG without geometry changes, drawn in 84% white on `#66BFFF`. Strict
+  formatting, the release build, Developer ID signatures, DMG integrity and the
+  mounted app's signature, build number and icon bytes were verified. Application
+  behaviour is unchanged from the checks below.
 - 68 Swift tests in 11 suites: listener parsing, classification, process identity
   and ownership, launch lifecycle, preferences, migration, tunnel state, panel
   presentation, directional transitions and height interpolation.

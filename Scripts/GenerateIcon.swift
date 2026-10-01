@@ -1,6 +1,9 @@
 import AppKit
 
-// Original vector artwork. Render at each native icon size for crisp edges.
+// Render the supplied Byte SVG at every native icon size without approximating its geometry.
+let markURL = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+    .deletingLastPathComponent().appendingPathComponent("Resources/ByteMark.svg")
+guard let mark = NSImage(contentsOf: markURL) else { fatalError("Byte mark could not be loaded") }
 let directory = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory: true)
 try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
 for points in [16, 32, 128, 256, 512] {
@@ -31,51 +34,10 @@ for points in [16, 32, 128, 256, 512] {
         NSColor.white.withAlphaComponent(0.35).setStroke()
         outer.lineWidth = 3
         outer.stroke()
-        // Byte's solid B mark. Coordinates are original vector geometry, scaled
-        // consistently across all representations; the blue identifies Relay.
-        context.translateBy(x: 265, y: 275)
-        context.scaleBy(x: 16.0, y: 16.0)
-        let mark = NSBezierPath()
-        mark.move(to: NSPoint(x: 3.2, y: 0))
-        mark.line(to: NSPoint(x: 24.2, y: 0))
-        mark.curve(
-            to: NSPoint(x: 26.4, y: 0.9), controlPoint1: NSPoint(x: 25.2, y: 0), controlPoint2: NSPoint(x: 25.7, y: 0.2)
-        )
-        mark.line(to: NSPoint(x: 29.6, y: 4.1))
-        mark.curve(
-            to: NSPoint(x: 30.5, y: 6.3), controlPoint1: NSPoint(x: 30.3, y: 4.8),
-            controlPoint2: NSPoint(x: 30.5, y: 5.3))
-        mark.line(to: NSPoint(x: 30.5, y: 12.5))
-        mark.curve(
-            to: NSPoint(x: 29, y: 14), controlPoint1: NSPoint(x: 30.5, y: 13.6), controlPoint2: NSPoint(x: 30, y: 14))
-        mark.line(to: NSPoint(x: 24.8, y: 14))
-        mark.curve(
-            to: NSPoint(x: 24, y: 14.8), controlPoint1: NSPoint(x: 24.2, y: 14), controlPoint2: NSPoint(x: 24, y: 14.2))
-        mark.line(to: NSPoint(x: 24, y: 15.2))
-        mark.curve(
-            to: NSPoint(x: 24.8, y: 16), controlPoint1: NSPoint(x: 24, y: 15.8), controlPoint2: NSPoint(x: 24.2, y: 16))
-        mark.line(to: NSPoint(x: 29, y: 16))
-        mark.curve(
-            to: NSPoint(x: 30.5, y: 17.5), controlPoint1: NSPoint(x: 30, y: 16),
-            controlPoint2: NSPoint(x: 30.5, y: 16.4))
-        mark.line(to: NSPoint(x: 30.5, y: 23.7))
-        mark.curve(
-            to: NSPoint(x: 29.6, y: 25.9), controlPoint1: NSPoint(x: 30.5, y: 24.7),
-            controlPoint2: NSPoint(x: 30.3, y: 25.2))
-        mark.line(to: NSPoint(x: 26.4, y: 29.1))
-        mark.curve(
-            to: NSPoint(x: 24.2, y: 30), controlPoint1: NSPoint(x: 25.7, y: 29.8),
-            controlPoint2: NSPoint(x: 25.2, y: 30))
-        mark.line(to: NSPoint(x: 3.2, y: 30))
-        mark.curve(
-            to: NSPoint(x: 0.5, y: 27.3), controlPoint1: NSPoint(x: 1.1, y: 30), controlPoint2: NSPoint(x: 0.5, y: 29.4)
-        )
-        mark.line(to: NSPoint(x: 0.5, y: 2.7))
-        mark.curve(
-            to: NSPoint(x: 3.2, y: 0), controlPoint1: NSPoint(x: 0.5, y: 0.6), controlPoint2: NSPoint(x: 1.1, y: 0))
-        mark.close()
-        NSColor(red: 0.055, green: 0.13, blue: 0.19, alpha: 1).setFill()
-        mark.fill()
+        // 84% white over #66BFFF yields approximately #E7F5FF.
+        mark.draw(
+            in: NSRect(x: 272, y: 272, width: 480, height: 480),
+            from: .zero, operation: .sourceOver, fraction: 0.84)
         NSGraphicsContext.restoreGraphicsState()
         guard let png = bitmap.representation(using: .png, properties: [:]) else { fatalError("Icon render failed") }
         let suffix = scale == 2 ? "@2x" : ""
