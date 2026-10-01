@@ -51,7 +51,7 @@ Do not remove quarantine attributes or disable Gatekeeper.
 3. Run the Release workflow for the tag, or upload locally verified assets with
    `gh release create --verify-tag --notes-file`.
 4. Keep the download asset named **Byte-Relay.dmg** for the stable latest-download URL.
-5. Update `byte-de/homebrew-tap`'s `Casks/byte-relay.rb` with the new version and DMG SHA-256.
+5. Generate the cask with `Scripts/prepare-homebrew.sh /tmp/relay-release/Byte-Relay.dmg /tmp/byte-relay.rb`, then add it to `Byte-de/homebrew-tap` as `Casks/byte-relay.rb`. The helper rejects an unnotarized DMG.
 6. Update and deploy the separate Relay website; set `released: true` only after
    the download and tap resolve. The website must not advertise unavailable assets.
 7. Verify HTTPS, download checksum, site links and the app's manual update check.
