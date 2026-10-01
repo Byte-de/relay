@@ -1,7 +1,11 @@
 #!/bin/bash
 # Sourced by build/check scripts. No global Xcode selection is modified.
 set -euo pipefail
-if [[ -z "${DEVELOPER_DIR:-}" && -d /Library/Developer/CommandLineTools ]]; then
+if [[ -z "${DEVELOPER_DIR:-}" && "${GITHUB_ACTIONS:-}" == "true" ]]; then
+  # Hosted runners provide Swift Testing with the selected full Xcode toolchain.
+  # Their separate CLT installation may omit that module.
+  export DEVELOPER_DIR="$(/usr/bin/xcode-select -p)"
+elif [[ -z "${DEVELOPER_DIR:-}" && -d /Library/Developer/CommandLineTools ]]; then
   export DEVELOPER_DIR=/Library/Developer/CommandLineTools
 fi
 if [[ -n "${RELAY_SDK:-}" ]]; then
