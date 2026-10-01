@@ -1,0 +1,19 @@
+name: Check
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test process, tunnel, migration and transition behaviour
+        run: Scripts/check.sh
+      - name: Check Swift formatting
+        run: xcrun swift-format lint --strict --recursive Sources Tests Package.swift
+      - name: Build release app
+        run: Scripts/build-app.sh "$RUNNER_TEMP/Byte Relay.app"
+      - name: Validate bundle
+        run: |
+          codesign --verify --deep --strict "$RUNNER_TEMP/Byte Relay.app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$RUNNER_TEMP/Byte Relay.app/Contents/Info.plist")" = de.byte.relay

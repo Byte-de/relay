@@ -1,0 +1,59 @@
+# Release verification — 1.0.0
+
+Test host: Apple Silicon, macOS 26.6.2. Swift 6.4, macOS 26.5 SDK.
+Only evidence from completed checks is listed as passed. Other-machine coverage
+is a release follow-up, not an inferred result.
+
+## Completed
+
+- 68 Swift tests in 11 suites: listener parsing, classification, process identity
+  and ownership, launch lifecycle, preferences, migration, tunnel state, panel
+  presentation, directional transitions and height interpolation.
+- 4 dedicated C supervisor checks: control-pipe EOF, unresponsive child,
+  supervisor termination and parent crash cleanup.
+- Disposable local service integration: TCP discovery, identity verification,
+  pause, resume, log capture, restart, graceful stop and cleanup.
+- Update metadata tests: numeric semantic versions, no downgrade, invalid versions,
+  draft/prerelease rejection, malformed/oversized response and untrusted URL rejection.
+- Migration preserves the prototype file, retains user settings, rejects malformed
+  data and gives existing Relay preferences precedence. Sharing consent defaults off.
+- Strict Swift formatting; release app and bundled helpers signed with Developer ID
+  and Hardened Runtime. Recursive code-signature verification passes.
+- Native UI: all onboarding steps forward/backward, completion, blue accent,
+  1.0.0 version, server/project/settings navigation, public-sharing notice and cancel,
+  no-release/network-error handling for manual updates.
+- Website: production static export, TypeScript and ESLint, responsive desktop/mobile
+  rendering, accessible tab controls and static FAQs. Updated runtime dependencies
+  pass the production dependency audit with zero known vulnerabilities.
+
+## Distribution gates still requiring external access
+
+- Apple notarization/stapling and Gatekeeper acceptance are blocked by Apple's
+  HTTP 403 agreement response. The account holder must accept the required agreement.
+- A quarantined browser download and drag-to-Applications installation must be
+  checked after notarization. No security settings or quarantine attributes are removed.
+- Release CI needs the signing/notary secrets described in RELEASING.md. Existing
+  secrets in another repository cannot be read back or implicitly copied.
+- The custom website domain requires Vercel authorization; the project exists but
+  domain assignment returned HTTP 403. DNS is managed outside Vercel.
+
+## Hardware and session follow-up
+
+The supported minimum system is declared, not a claim to have tested every 26.x
+release. Before widening distribution, use another Mac for a clean installation
+and a second hardware configuration. Exercise display attach/detach, different
+scaling factors, full-screen Spaces, sleep/wake and long idle/active sessions.
+Real hardware cycles and a long energy trace have not been performed in this
+shared interactive session. Keep those gaps visible in release decisions.
+
+## Motion and presentation contracts
+
+Tab entry/exit: 150/120 ms. Onboarding entry/exit: 240/120 ms. Panel resize: 220 ms.
+All normal transitions stay under 500 ms, with cubic ease-out curves. New pages
+enter from the opposite edge to the departing page. Rapid reversals preserve
+identity and cancel stale cleanup. Reduce Motion removes spatial/blur/height motion
+and uses a short opacity change. Only the active presentation surface resizes.
+
+The window, menu and notch share presentation coordination. Inline forms and
+confirmations replace the panel body instead of adding nested borderless sheets.
+A compact notch may coexist with a full panel; two expanded panels must not.

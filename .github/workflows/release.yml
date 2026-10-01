@@ -1,0 +1,72 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing stable version tag, for example v1.0.0
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: public-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: macos-26
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - name: Validate tag and signing inputs
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          CERT: ${{ secrets.DEVID_CERT_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.DEVID_CERT_PASSWORD }}
+          API_KEY: ${{ secrets.ASC_API_KEY_P8_BASE64 }}
+          KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$RELEASE_TAG" = "v$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' Resources/Info.plist)"
+          test -n "$CERT" && test -n "$CERT_PASSWORD" && test -n "$API_KEY" && test -n "$KEY_ID" && test -n "$ISSUER_ID"
+      - name: Configure temporary signing keychain
+        env:
+          CERT: ${{ secrets.DEVID_CERT_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.DEVID_CERT_PASSWORD }}
+          API_KEY: ${{ secrets.ASC_API_KEY_P8_BASE64 }}
+          KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          umask 077
+          keychain="$RUNNER_TEMP/relay-signing.keychain-db"
+          password="$(openssl rand -hex 32)"
+          printf '%s' "$CERT" | base64 --decode > "$RUNNER_TEMP/signing.p12"
+          printf '%s' "$API_KEY" | base64 --decode > "$RUNNER_TEMP/notary.p8"
+          security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$password" "$keychain"
+          security import "$RUNNER_TEMP/signing.p12" -P "$CERT_PASSWORD" -A -t cert -f pkcs12 -k "$keychain"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$password" "$keychain" >/dev/null
+          security list-keychains -d user -s "$keychain"
+          xcrun notarytool store-credentials BYTE_NOTARY --key "$RUNNER_TEMP/notary.p8" --key-id "$KEY_ID" --issuer "$ISSUER_ID" --keychain "$keychain"
+          identity=$(security find-identity -v -p codesigning "$keychain" | sed -n 's/.*"\(Developer ID Application:.*\)".*/\1/p' | head -1)
+          test -n "$identity"
+          printf 'SIGN_IDENTITY=%s\n' "$identity" >> "$GITHUB_ENV"
+          rm "$RUNNER_TEMP/signing.p12" "$RUNNER_TEMP/notary.p8"
+      - name: Build, sign, notarize and staple
+        run: Scripts/release.sh "$RUNNER_TEMP/release"
+      - name: Publish verified assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          gh release create "$RELEASE_TAG" --verify-tag --title "Byte Relay ${RELEASE_TAG#v}" --notes-file CHANGELOG.md "$RUNNER_TEMP/release/Byte-Relay.dmg" "$RUNNER_TEMP/release/SHA256SUMS"
+      - name: Remove signing material
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/relay-signing.keychain-db" 2>/dev/null || true
+          rm -f "$RUNNER_TEMP/signing.p12" "$RUNNER_TEMP/notary.p8"

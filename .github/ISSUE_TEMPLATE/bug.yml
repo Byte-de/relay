@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a reproducible problem in Byte Relay.
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Byte Relay and macOS versions
+      placeholder: Byte Relay 1.0.0 · macOS 26.x · Apple M-series
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Explain what happened and what you expected. Redact private paths, command arguments, logs and live sharing links.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Relevant context
+      description: Menu bar, window or notch? External display? Reduced motion? Optional redacted screenshot.

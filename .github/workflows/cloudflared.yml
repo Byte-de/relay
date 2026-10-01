@@ -1,0 +1,23 @@
+name: Check bundled cloudflared
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 8 * * 1'
+permissions:
+  contents: read
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare the pinned client with the upstream release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pinned=$(sed -n 's/^version=//p' Scripts/fetch-cloudflared.sh | tr -d '"')
+          latest=$(gh api repos/cloudflare/cloudflared/releases/latest --jq .tag_name)
+          if [ "$pinned" != "$latest" ]; then
+            printf '::error::cloudflared %s is available; review and update pinned %s with its checksums and notices.\n' "$latest" "$pinned"
+            exit 1
+          fi

@@ -1,0 +1,14 @@
+.build/
+.swiftpm/
+dist/
+*.app/
+*.dmg
+*.zip
+*.xcarchive/
+*.dSYM/
+.DS_Store
+.env*
+*.p12
+*.p8
+*.key
+*.log
