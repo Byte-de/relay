@@ -52,6 +52,11 @@ private struct VisualEffect: NSViewRepresentable {
 struct PanelGlass: View {
     var radius: CGFloat = DS.panelRadius
     private var accessibility = PanelAccessibility()
+
+    init(radius: CGFloat = DS.panelRadius) {
+        self.radius = radius
+    }
+
     var body: some View {
         ZStack {
             if accessibility.reduceTransparency {
@@ -164,6 +169,20 @@ struct IconButton: View {
     @FocusState private var focused: Bool
     @Environment(\.isEnabled) private var isEnabled
     private var accessibility = PanelAccessibility()
+
+    init(
+        symbol: String, help: String, tint: Color = DS.muted, selected: Bool = false,
+        immediateHelp: Bool = false, systemForeground: Bool = false, action: @escaping () -> Void
+    ) {
+        self.symbol = symbol
+        self.help = help
+        self.tint = tint
+        self.selected = selected
+        self.immediateHelp = immediateHelp
+        self.systemForeground = systemForeground
+        self.action = action
+    }
+
     var body: some View {
         Button(action: action) {
             Image(systemName: symbol).font(.system(size: 14, weight: .regular))

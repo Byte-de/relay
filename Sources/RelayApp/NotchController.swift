@@ -140,6 +140,13 @@ private struct NotchView: View {
     @Bindable var state: NotchState
     let resized: (CGSize) -> Void
     private var accessibility = PanelAccessibility()
+
+    init(model: MonitorModel, state: NotchState, resized: @escaping (CGSize) -> Void) {
+        self.model = model
+        self.state = state
+        self.resized = resized
+    }
+
     private var hasDialog: Bool { model.hasBlockingPanelDialog && model.presentationSurface == .notch }
     private var cardHeight: CGFloat {
         max(44, state.expandedSize.height - 2 * DS.notchInset - DS.navigationSpacing - DS.navigationHeight)

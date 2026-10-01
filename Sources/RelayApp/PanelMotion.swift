@@ -57,6 +57,11 @@ struct PanelPressFeedback: ViewModifier {
     let isPressed: Bool
     private var accessibility = PanelAccessibility()
     @State private var pointerPress = false
+
+    init(isPressed: Bool) {
+        self.isPressed = isPressed
+    }
+
     func body(content: Content) -> some View {
         content
             .scaleEffect(isPressed && pointerPress && !accessibility.reduceMotion ? 0.96 : 1)
@@ -73,6 +78,12 @@ struct ControlGlass: ViewModifier {
     let radius: CGFloat
     var usesLiquidGlass = true
     private var accessibility = PanelAccessibility()
+
+    init(radius: CGFloat, usesLiquidGlass: Bool = true) {
+        self.radius = radius
+        self.usesLiquidGlass = usesLiquidGlass
+    }
+
     func body(content: Content) -> some View {
         if #available(macOS 26, *), usesLiquidGlass && !accessibility.reduceTransparency {
             content.glassEffect(.regular, in: .rect(cornerRadius: radius))

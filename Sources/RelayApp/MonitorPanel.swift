@@ -45,6 +45,18 @@ struct MonitorPanel: View {
     @FocusState private var searchFocused: Bool
     private var accessibility = PanelAccessibility()
 
+    init(
+        model: MonitorModel, surface: MonitorSurface, collapse: (() -> Void)? = nil,
+        drawsSurface: Bool = true, contentIsRevealed: Bool = true, revealAnimation: Animation? = nil
+    ) {
+        self.model = model
+        self.surface = surface
+        self.collapse = collapse
+        self.drawsSurface = drawsSurface
+        self.contentIsRevealed = contentIsRevealed
+        self.revealAnimation = revealAnimation
+    }
+
     private enum DialogIdentity: Hashable {
         case panel, launch, share
         case process(UUID)
