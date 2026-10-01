@@ -26,6 +26,12 @@ is a release follow-up, not an inferred result.
   not an energy benchmark; spawned scanner tools are not included.
 - Strict Swift formatting; release app and bundled helpers signed with Developer ID
   and Hardened Runtime. Recursive code-signature verification passes.
+- GitHub macOS 26 CI passes tests, process integration, strict formatting, the
+  release build and bundle verification (run 36891313075, commit a7812b5).
+- The signed local candidate DMG passes its integrity check. Its app passes
+  recursive signature verification both when mounted read-only and after copying
+  to an empty installation test directory. Gatekeeper correctly identifies it as
+  an unnotarized Developer ID build; it is not a public release artifact.
 - Native UI: all onboarding steps forward/backward, completion, blue accent,
   1.0.0 version, server/project/settings navigation, public-sharing notice and cancel,
   no-release/network-error handling for manual updates.
@@ -43,6 +49,9 @@ is a release follow-up, not an inferred result.
   secrets in another repository cannot be read back or implicitly copied.
 - The custom website domain requires Vercel authorization; the project exists but
   domain assignment returned HTTP 403. DNS is managed outside Vercel.
+- The initial Vercel preview is reachable. A later deployment from the private
+  Git repository is blocked by Vercel's Git-author/team association check. Complete
+  that association through the account owner before redeploying the final source.
 
 ## Hardware and session follow-up
 
