@@ -13,6 +13,10 @@ is a release follow-up, not an inferred result.
   supervisor termination and parent crash cleanup.
 - Disposable local service integration: TCP discovery, identity verification,
   pause, resume, log capture, restart, graceful stop and cleanup.
+- Live Cloudflare smoke test with the bundled signed client and supervisor: a
+  temporary localhost server returned its fixed test text through the generated
+  public HTTPS URL. Closing the owner pipe stopped the tunnel. No user project
+  or file was exposed by this test.
 - Update metadata tests: numeric semantic versions, no downgrade, invalid versions,
   draft/prerelease rejection, malformed/oversized response and untrusted URL rejection.
 - Migration preserves the prototype file, retains user settings, rejects malformed

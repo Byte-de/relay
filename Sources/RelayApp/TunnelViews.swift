@@ -58,6 +58,12 @@ struct TunnelStatusRow: View {
     @Bindable var model: MonitorModel
     let record: TunnelRecord
     private var accessibility = PanelAccessibility()
+
+    init(model: MonitorModel, record: TunnelRecord) {
+        self.model = model
+        self.record = record
+    }
+
     private var title: String {
         switch record.phase {
         case .starting: "Cloudflare verbindet…"
