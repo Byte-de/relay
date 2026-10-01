@@ -6,8 +6,8 @@ image: https://developers.cloudflare.com/cloudflare-one/networks/connectors/clou
 
 [Skip to content](#main-content)
 
-> Documentation Index  
-> Fetch the complete documentation index at: https://developers.cloudflare.com/cloudflare-one/llms.txt  
+> Documentation Index
+> Fetch the complete documentation index at: https://developers.cloudflare.com/cloudflare-one/llms.txt
 > Use this file to discover all available pages before exploring further.
 
 # Copyrights
